@@ -1,15 +1,17 @@
 from flask import Flask
 from flask import render_template
 from flask_bootstrap import Bootstrap
-from flask import url_for
+from flask_moment import Moment
+from datetime import datetime
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+moment = Moment(app)
 
 
 @app.route('/')
 def index():
-    return 'Hello World!'
+    return render_template("index.html", current=datetime.utcnow())
 
 
 @app.route("/user/<name>")
@@ -31,5 +33,4 @@ def internal_server_error(e):
 if __name__ == '__main__':
     app.run()
 
-
-print(url_for('/'))
+print(app.url_map)

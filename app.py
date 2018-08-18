@@ -1,3 +1,4 @@
+from flask_script import Manager, Shell
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -9,13 +10,17 @@ from wtforms.validators import Required
 from flask import session, url_for, redirect, flash
 
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+from flask_migrate import Migrate, MigrateCommand
 import os
 
 
 class NameForm(FlaskForm):
     name = StringField("what is your name?", validators=[Required()])
     submit = SubmitField("Submit")
+
+
+def make_shell_context():
+    return dict(app=app, db=db, User=User, Role=Role)
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -25,11 +30,14 @@ app.config["SECRET_KEY"] = "hard to guess string."
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "data.sqlite")
 app.config["SQLALCHEMY_COMMIT_ON_TEARDOWN"] = True
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
-
-db.create_all()
+migrate = Migrate(app, db)
+manager.add_command("shell", Shell(make_context=make_shell_context))
+manager.add_command("db", MigrateCommand)
 
 
 class Role(db.Model):
@@ -88,6 +96,6 @@ def internal_server_error():
 
 
 if __name__ == '__main__':
-    app.run()
+    manager.run()
 
 print(app.url_map)

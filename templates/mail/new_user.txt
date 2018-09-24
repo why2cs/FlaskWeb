@@ -1,0 +1,2 @@
+the txt format Email!
+The User named by {{ user.username }} is created!

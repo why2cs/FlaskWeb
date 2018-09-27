@@ -19,7 +19,6 @@ def index():
             db.session.add(new_user)
             db.session.commit()
             session["known"] = False
-            #此处为什么可以用下标形式？
             if current_app.config["FLASKY_ADMIN"]:
                 foo = send_mail(current_app.config["FLASKY_ADMIN"], "New User", "mail/new_user", user=new_user)
                 print(foo)
